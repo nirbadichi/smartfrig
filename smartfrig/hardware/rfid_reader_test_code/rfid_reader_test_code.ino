@@ -1,10 +1,11 @@
 #include <SoftwareSerial.h>
 
-#define TAG_LEGAL_LENGTH 13
-#define TAG_START_INDEX 1
-#define TAG_END_INDEX 13
+#define ADD_TAG_CODE "06008E6643AD"  //change this ID with your own card TAG
+#define DEL_TAG_CODE "07003DE86DBF"  //change this ID with your own card TAG
 
 SoftwareSerial rfid = SoftwareSerial(5, 6);
+String msg;
+String ID;  //string to store allowed cards
 
 void setup()
 {
@@ -15,68 +16,86 @@ void setup()
 	Serial.println("RFID Ready");
 }
 
+char c;
 
+void loop(){
 
-void loop()
-{
-
-	String string_buffer = "";
-	char char_buffer;
+	msg = "";
 	rfid.flush();
 	while (rfid.available()>0){
-		char_buffer = rfid.read();
-		string_buffer += char_buffer;
-		//Serial.println(string_buffer);
-		//Serial.println(string_buffer.length());
+		c = rfid.read();
+		msg += c;
+		//Serial.println(msg);
+		//Serial.println(msg.length());
 	}
-	if (string_buffer.length() > TAG_LEGAL_LENGTH)
-	{
-		readTag(string_buffer.substring(TAG_START_INDEX, TAG_END_INDEX));
-	}
-	string_buffer = "";
+	msg = msg.substring(1, 13);
+	if (msg.indexOf(ADD_TAG_CODE) >= 0) add();
+	else if (msg.indexOf(DEL_TAG_CODE) >= 0) del();
+	else if (msg.length()>10) verifica();
+	msg = "";
 
 }
 
-
-
-bool findTagKeyInMyFridge(String tag_key)
-{
-	//Wifi server code
-}
-
-
-void removeKeyFromMyFridge(String key)
-{
-	//Wifi server code
-}
-
-bool addKeyToMyFridge(String key)
-{
-	//Wifi server code
-}
-
-bool findKeyInDataBase(String key)
-{
-	//Wifi server code
-}
-
-void readTag(String rfid_key)
-{
-	void* record;
-	if (findTagKeyInMyFridge(rfid_key))
-	{
-		removeKeyFromMyFridge(rfid_key);
-	}
-	else
-	{
-		if (findKeyInDataBase(rfid_key))
-		{
-			addKeyToMyFridge(rfid_key);
-		}
-		else
-		{
-			//Tag doesn't exist in base
+void add(){
+	Serial.print("What TAG do you wanna grant access?: ");
+	delay(500);
+	rfid.flush();
+	msg = "";
+	while (msg.length()<13){
+		while (rfid.available()>0){
+			c = rfid.read();
+			msg += c;
 		}
 	}
+	if (ID.indexOf(msg) >= 0) {
+		Serial.println("\nAccess already granted for this card.");
+		msg = "";
+	}
+	else{
+		Serial.print("Card: ");
+		Serial.println(msg);
+		ID += msg;
+		ID += ",";
+		//Serial.print("ID: ");
+		// Serial.println(ID);
+		Serial.println("Access granted for this card.");
+	}
+
+}
+
+void del(){
+
+	Serial.print("What TAG do you wanna deny access?: ");
+	delay(500);
+	rfid.flush();	
+	msg = "";
+	while (msg.length()<13){
+		while (rfid.available()>0){
+			c = rfid.read();
+			msg += c;
+		}
+	}
+	msg = msg.substring(1, 13);
+	if (ID.indexOf(msg) >= 0){
+		Serial.println(msg);
+		Serial.println("TAG found. Access for this card denied.");
+		//ID.replace(card,"");
+		int pos = ID.indexOf(msg);
+		msg = "";
+		msg += ID.substring(0, pos);
+		msg += ID.substring(pos + 15, ID.length());
+		ID = "";
+		ID += msg;
+		//Serial.print("ID: ");
+		//Serial.println(ID);
+	}
+	else Serial.println("\nTAG not found or already denied");
+}
+
+void verifica(){
+	msg = msg.substring(1, 13);
+	if (ID.indexOf(msg) >= 0) Serial.println("Access granted.");
+
+	else Serial.println("Access denied.");
 	delay(500);
 }
