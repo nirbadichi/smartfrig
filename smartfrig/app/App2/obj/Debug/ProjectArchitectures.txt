@@ -1,1 +1,1 @@
-c:\users\roi\documents\visual studio 2013\Projects\App2\App2\Fring.csproj;neutral
+C:\Users\Nitsan\study\New folder\smartfrig\app\App2\Fring.csproj;neutral

@@ -104,6 +104,8 @@
     <Content Include="Assets\StoreLogo.scale-240.png" />
     <Content Include="Assets\WideLogo.scale-240.png" />
     <Content Include="images\danona.jpg" />
+    <Content Include="images\eggs.jpg" />
+    <Content Include="images\riceMilk.jpg" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">

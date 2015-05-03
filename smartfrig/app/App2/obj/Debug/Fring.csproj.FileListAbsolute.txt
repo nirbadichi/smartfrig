@@ -36,3 +36,41 @@ c:\users\roi\documents\visual studio 2013\Projects\App2\App2\bin\Debug\Microsoft
 c:\users\roi\documents\visual studio 2013\Projects\App2\App2\bin\Debug\Microsoft.Advertising.Mobile.Display.xml
 c:\users\roi\documents\visual studio 2013\Projects\App2\App2\bin\Debug\Microsoft.Advertising.Mobile.UI.winmd
 c:\users\roi\documents\visual studio 2013\Projects\App2\App2\bin\Debug\Microsoft.Advertising.Mobile.UI.xml
+C:\Users\Nitsan\study\New folder\smartfrig\app\App2\bin\Debug\App.xbf
+C:\Users\Nitsan\study\New folder\smartfrig\app\App2\bin\Debug\MainPage.xbf
+C:\Users\Nitsan\study\New folder\smartfrig\app\App2\bin\Debug\App2.xr.xml
+C:\Users\Nitsan\study\New folder\smartfrig\app\App2\bin\Debug\App2.exe
+C:\Users\Nitsan\study\New folder\smartfrig\app\App2\bin\Debug\App2.pdb
+C:\Users\Nitsan\study\New folder\smartfrig\app\App2\bin\Debug\resources.pri
+C:\Users\Nitsan\study\New folder\smartfrig\app\App2\bin\Debug\AppxManifest.xml
+C:\Users\Nitsan\study\New folder\smartfrig\app\App2\bin\Debug\Fring.build.appxrecipe
+C:\Users\Nitsan\study\New folder\smartfrig\app\App2\bin\Debug\Microsoft.Advertising.Mobile.Common.winmd
+C:\Users\Nitsan\study\New folder\smartfrig\app\App2\bin\Debug\Microsoft.Advertising.Mobile.Common.xml
+C:\Users\Nitsan\study\New folder\smartfrig\app\App2\bin\Debug\Microsoft.Advertising.Mobile.Display.winmd
+C:\Users\Nitsan\study\New folder\smartfrig\app\App2\bin\Debug\Microsoft.Advertising.Mobile.Display.xml
+C:\Users\Nitsan\study\New folder\smartfrig\app\App2\bin\Debug\Microsoft.Advertising.Mobile.UI.winmd
+C:\Users\Nitsan\study\New folder\smartfrig\app\App2\bin\Debug\Microsoft.Advertising.Mobile.UI.xml
+C:\Users\Nitsan\study\New folder\smartfrig\app\App2\obj\Debug\App.g.i.cs
+C:\Users\Nitsan\study\New folder\smartfrig\app\App2\obj\Debug\App.g.cs
+C:\Users\Nitsan\study\New folder\smartfrig\app\App2\obj\Debug\MainPage.g.i.cs
+C:\Users\Nitsan\study\New folder\smartfrig\app\App2\obj\Debug\MainPage.g.cs
+C:\Users\Nitsan\study\New folder\smartfrig\app\App2\obj\Debug\XamlTypeInfo.g.cs
+C:\Users\Nitsan\study\New folder\smartfrig\app\App2\obj\Debug\App.xaml
+C:\Users\Nitsan\study\New folder\smartfrig\app\App2\obj\Debug\MainPage.xaml
+C:\Users\Nitsan\study\New folder\smartfrig\app\App2\obj\Debug\App.xbf
+C:\Users\Nitsan\study\New folder\smartfrig\app\App2\obj\Debug\MainPage.xbf
+C:\Users\Nitsan\study\New folder\smartfrig\app\App2\obj\Debug\XamlSaveStateFile.xml
+C:\Users\Nitsan\study\New folder\smartfrig\app\App2\obj\Debug\App2.exe
+C:\Users\Nitsan\study\New folder\smartfrig\app\App2\obj\Debug\App2.pdb
+C:\Users\Nitsan\study\New folder\smartfrig\app\App2\obj\Debug\priconfig.xml
+C:\Users\Nitsan\study\New folder\smartfrig\app\App2\obj\Debug\priconfig.xml.intermediate
+C:\Users\Nitsan\study\New folder\smartfrig\app\App2\obj\Debug\layout.resfiles
+C:\Users\Nitsan\study\New folder\smartfrig\app\App2\obj\Debug\layout.resfiles.intermediate
+C:\Users\Nitsan\study\New folder\smartfrig\app\App2\obj\Debug\resources.resfiles
+C:\Users\Nitsan\study\New folder\smartfrig\app\App2\obj\Debug\resources.resfiles.intermediate
+C:\Users\Nitsan\study\New folder\smartfrig\app\App2\obj\Debug\pri.resfiles
+C:\Users\Nitsan\study\New folder\smartfrig\app\App2\obj\Debug\pri.resfiles.intermediate
+C:\Users\Nitsan\study\New folder\smartfrig\app\App2\obj\Debug\qualifiers.txt
+C:\Users\Nitsan\study\New folder\smartfrig\app\App2\obj\Debug\qualifiers.txt.intermediate
+C:\Users\Nitsan\study\New folder\smartfrig\app\App2\obj\Debug\MultipleQualifiersPerDimensionFound.txt
+C:\Users\Nitsan\study\New folder\smartfrig\app\App2\obj\Debug\ProjectArchitectures.txt
