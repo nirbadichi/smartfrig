@@ -22,18 +22,15 @@ SoftwareSerial rfid = SoftwareSerial(5, 6);
 // assign a MAC address for the ethernet controller.
 // fill in your address here:
 byte mac[] = {
-	0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
+	0x00, 0xAA, 0xBB, 0xCC, 0xDE, 0x04 };
 // fill in an available IP address on your network here,
 // for manual configuration:
-IPAddress ip(10, 0, 0, 20);
-
-// fill in your Domain Name Server address here:
-IPAddress myDns(1, 1, 1, 1);
+IPAddress ip(192, 168, 56, 177);
 
 // initialize the library instance:
 EthernetClient client;
 
-char server[] = "www.arduino.cc";
+char server[] = "a7he2uhi7b.database.windows.net.1433";
 
 unsigned long lastConnectionTime = 0;          // last time you connected to the server, in milliseconds
 boolean lastConnected = false;                 // state of the connection last time through the main loop
@@ -50,25 +47,32 @@ void setup()
 
 void loop()
 {
-	rfidMonitorRead();
+    rfidMonitorRead();
 }
 
 void serialSetup()
 {
-	//Initialize serial
-	Serial.begin(9600);
-	Serial.println("Serial Ready");
+    //Initialize serial
+    Serial.begin(9600);
+    Serial.println("Serial Ready");
 }
 
 void ethernetSetup()
 {
-	// give the ethernet module time to boot up:
-	delay(1000);
+    // give the ethernet module time to boot up:
+    delay(1000);
+    if (Ethernet.begin(mac)==0)
+    {
+        Serial.println("Failed to configure Ethernet using DHCP");
+        Ethernet.begin(mac,ip);
+    };
+    delay(1000);
+    Serial.println("Ethernet Ready");
 	// start the Ethernet connection using a fixed IP address and DNS server:
-	Ethernet.begin(mac, ip, myDns);
+	//Ethernet.begin(mac, ip, myDns);
 	// print the Ethernet board/shield's IP address:
-	Serial.print("My IP address: ");
-	Serial.println(Ethernet.localIP());
+	//Serial.print("My IP address: ");
+	//Serial.println(Ethernet.localIP());
 }
 
 void rfidSetup()
@@ -101,12 +105,7 @@ String ethernetMonitorRead()
 		Serial.println("disconnecting.");
 		client.stop();
 	}
-
-	if (!client.connected())
-	{
-		httpRequest();
-	}
-	// store the state of the connection for next time through
+        // store the state of the connection for next time through
 	// the loop:
 	lastConnected = client.connected();
 
@@ -146,7 +145,7 @@ bool findTagKeyInMyFridge(String tag_key)
 		Serial.println(tag_key);
 	}
 	String server_return_value;
-	String request_base = "GET /latest.txt HTTP/1.1";
+	String request_base = "GET find tag key in my fridge";
 	if (DEBUG_MODE)
 	{
 		Serial.println("The HTTP request: ");
@@ -156,11 +155,11 @@ bool findTagKeyInMyFridge(String tag_key)
 	{
 		httpRequest(request_base);
 	}	
-	String server_return_value = ethernetMonitorRead();
+	 server_return_value = "temp value";//ethernetMonitorRead();
 	if (DEBUG_MODE)
 	{
 		Serial.println("The server return value: ");
-		Serial.println("server_return_value");
+		Serial.println(server_return_value);
 	}
 	if (server_return_value) // need to update condition based on retrun value from server
 	{
@@ -187,7 +186,7 @@ bool removeKeyFromMyFridge(String key)
 		Serial.println(key);
 	}
 	String server_return_value;
-	String request_base = "GET /latest.txt HTTP/1.1";
+	String request_base = "GET remove key fridge";
 	if (DEBUG_MODE)
 	{
 		Serial.println("The HTTP request: ");
@@ -195,15 +194,15 @@ bool removeKeyFromMyFridge(String key)
 	}
 	if (!client.connected())
 	{
-		httpRequest(request_base);
+		//httpRequest(request_base);
 	}
-	String server_return_value = ethernetMonitorRead();
+	server_return_value = "";//ethernetMonitorRead();
 	if (DEBUG_MODE)
 	{
 		Serial.println("The server return value: ");
-		Serial.println("server_return_value");
+		Serial.println(server_return_value);
 	}
-	if (server_return_value) // need to update condition based on retrun value from server
+	if (server_return_value != "") // need to update condition based on retrun value from server
 	{
 		if (DEBUG_MODE)
 		{
@@ -227,7 +226,7 @@ bool addKeyToMyFridge(String key)
 		Serial.println(key);
 	}
 	String server_return_value;
-	String request_base = "GET /latest.txt HTTP/1.1";
+	String request_base = "GET add to my fridge";
 	if (DEBUG_MODE)
 	{
 		Serial.println("The HTTP request: ");
@@ -235,13 +234,13 @@ bool addKeyToMyFridge(String key)
 	}
 	if (!client.connected())
 	{
-		httpRequest(request_base);
+		//httpRequest(request_base);
 	}
-	String server_return_value = ethernetMonitorRead();
+               server_return_value = "temp value";//ethernetMonitorRead();
 	if (DEBUG_MODE)
 	{
 		Serial.println("The server return value: ");
-		Serial.println("server_return_value");
+		Serial.println(server_return_value);
 	}
 	if (server_return_value) // need to update condition based on retrun value from server
 	{
@@ -266,7 +265,7 @@ bool findKeyInDataBase(String key)
 		Serial.println("Finding tag key in data base...");
 	}
 	String server_return_value;
-	String request_base = "GET /latest.txt HTTP/1.1";
+	String request_base = "GET find in data base";
 	if (DEBUG_MODE)
 	{
 		Serial.println("The HTTP request: ");
@@ -274,13 +273,13 @@ bool findKeyInDataBase(String key)
 	}
 	if (!client.connected())
 	{
-		httpRequest(request_base);
+		//httpRequest(request_base);
 	}
-	String server_return_value = ethernetMonitorRead();
+	 server_return_value = "temp value";//ethernetMonitorRead();
 	if (DEBUG_MODE)
 	{
 		Serial.println("The server return value: ");
-		Serial.println("server_return_value");
+		Serial.println(server_return_value);
 	}
 	if (server_return_value) // need to update condition based on retrun value from server
 	{
@@ -339,21 +338,28 @@ void readTag(String rfid_key)
 //==========================================
 
 // this method makes a HTTP connection to the server:
-void httpRequest(String request_base) {
-	// if there's a successful connection:
-	if (client.connect(server, 80)) {
-		Serial.println("connecting...");
-		// send the HTTP PUT request:
-		client.println(request_base);
-		client.println("Host: www.arduino.cc");
-		client.println("User-Agent: Arduinoethernet/1.1");
-		client.println("Connection: close");
-		client.println();
-	}
-	else {
-		// if you couldn't make a connection:
-		Serial.println("connection failed");
-		Serial.println("disconnecting.");
-		client.stop();
-	}
+void httpRequest(String request_base)
+{
+    Serial.println("connecting...");
+    // if there's a successful connection:
+    if (client.connect(server, 80)) 
+    {
+        Serial.println("connected");
+        client.println("GET /search?q=arduino HTTP/1.1");
+        client.println("a7he2uhi7b.database.windows.net.1433");
+        client.println();
+	// send the HTTP PUT request:
+	//client.println(request_base);
+	//client.println("Host: www.arduino.cc");
+	//client.println("User-Agent: Arduinoethernet/1.1");
+	//client.println("Connection: close");
+	//client.println();
+    }
+    else 
+    {
+	// if you couldn't make a connection:
+	Serial.println("connection failed");
+	Serial.println("disconnecting.");
+	client.stop();
+    }
 }
