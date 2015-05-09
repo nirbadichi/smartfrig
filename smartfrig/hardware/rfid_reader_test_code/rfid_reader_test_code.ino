@@ -19,12 +19,15 @@ void setup()
 char c;
 
 void loop(){
-
 	msg = "";
 	rfid.flush();
 	while (rfid.available()>0){
+                // if (msg.length()==0){
+                // Serial.println("start");
+                //}
 		c = rfid.read();
 		msg += c;
+            
 		//Serial.println(msg);
 		//Serial.println(msg.length());
 	}
@@ -32,12 +35,10 @@ void loop(){
 	if (msg.indexOf(ADD_TAG_CODE) >= 0) add();
 	else if (msg.indexOf(DEL_TAG_CODE) >= 0) del();
 	else if (msg.length()>10) verifica();
-	msg = "";
-
 }
 
 void add(){
-	Serial.print("What TAG do you wanna grant access?: ");
+	Serial.println("What TAG do you wanna grant access?: ");
 	delay(500);
 	rfid.flush();
 	msg = "";
@@ -65,7 +66,7 @@ void add(){
 
 void del(){
 
-	Serial.print("What TAG do you wanna deny access?: ");
+	Serial.println("What TAG do you wanna deny access?: ");
 	delay(500);
 	rfid.flush();	
 	msg = "";
@@ -93,9 +94,8 @@ void del(){
 }
 
 void verifica(){
-	msg = msg.substring(1, 13);
 	if (ID.indexOf(msg) >= 0) Serial.println("Access granted.");
 
 	else Serial.println("Access denied.");
-	delay(500);
+	delay(300);
 }
