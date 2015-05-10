@@ -85,13 +85,6 @@ void rfidSetup()
 }
 
 
-	if (DEBUG_MODE)
-	{
-		
-		Serial.println(string_buffer);
-	}
-
-
 void rfidMonitorRead()
 {
 	String string_buffer = "";
@@ -118,7 +111,7 @@ void rfidMonitorRead()
 ** Send an HTTP POST request to the Azure Mobile Service data API
 */
  
-void sendRequest(int value)
+void sendRequest(String value)
 {
   Serial.println("\nconnecting...");
  
@@ -126,9 +119,9 @@ void sendRequest(int value)
  
     Serial.print("sending ");
     Serial.println(value);
-    /TodoItem/{id}
+    
     // GET URI
-    sprintf(buffer, "GET /api/Arduino/%s HTTP/1.1", value);
+    sprintf(buffer, "GET /api/Arduino/%s HTTP/1.1", value.c_str());
     client.println(buffer);
  
     // Host header
@@ -177,14 +170,14 @@ void waitResponse()
  
 void readResponse()
 {
-  bool print = true;
+  //bool print = true;
   Serial.println("Data that was read from the server: ");
   while (client.available()) {
     char c = client.read();
     // Print only until the first carriage return
-    if (c == '\n')
-      print = false;
-    if (print)
+    //if (c == '\n')
+     // print = false;
+    //if (print)
       Serial.print(c);
   }
 }
