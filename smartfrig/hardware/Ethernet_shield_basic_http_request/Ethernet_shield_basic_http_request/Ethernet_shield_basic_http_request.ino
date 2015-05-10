@@ -1,4 +1,7 @@
 #include <SoftwareSerial.h>
+#include <SPI.h>
+#include <Ethernet.h>
+
 //==========================================
 // General defines
 //==========================================
@@ -16,26 +19,28 @@ SoftwareSerial rfid = SoftwareSerial(5, 6);
 // ethernet defines
 //==========================================
 
-#include <SPI.h>
-#include <Ethernet.h>
 
 // assign a MAC address for the ethernet controller.
 // fill in your address here:
-byte mac[] = {
-	0x00, 0xAA, 0xBB, 0xCC, 0xDE, 0x04 };
-// fill in an available IP address on your network here,
-// for manual configuration:
-IPAddress ip(192, 168, 56, 177);
+byte mac[] = {0x00, 0xAA, 0xBB, 0xCC, 0xDE, 0x04 };
+// Azure Mobile Service address
+// You can find this in your service dashboard
+const char *server = "fringmobileservice.azure-mobile.net";
+
+// Azure Mobile Service Application Key
+// You can find this key in the 'Manage Keys' menu on the dashboard
+const char *ams_key = "waskbIzegKToLQvsNuUqaEUGgDRQyA77";
+  
+char buffer[64];
+ 
+/*
+** Send an HTTP POST request to the Azure Mobile Service data API
+*/
 
 // initialize the library instance:
 EthernetClient client;
 
-char server[] = "a7he2uhi7b.database.windows.net.1433";
-
-unsigned long lastConnectionTime = 0;          // last time you connected to the server, in milliseconds
 boolean lastConnected = false;                 // state of the connection last time through the main loop
-const unsigned long postingInterval = 60 * 1000;  // delay between updates, in milliseconds
-
 
 void setup()
 {
@@ -59,20 +64,17 @@ void serialSetup()
 
 void ethernetSetup()
 {
-    // give the ethernet module time to boot up:
-    delay(1000);
-    if (Ethernet.begin(mac)==0)
-    {
-        Serial.println("Failed to configure Ethernet using DHCP");
-        Ethernet.begin(mac,ip);
-    };
-    delay(1000);
-    Serial.println("Ethernet Ready");
-	// start the Ethernet connection using a fixed IP address and DNS server:
-	//Ethernet.begin(mac, ip, myDns);
-	// print the Ethernet board/shield's IP address:
-	//Serial.print("My IP address: ");
-	//Serial.println(Ethernet.localIP());
+  // give the ethernet module time to boot up:
+  delay(1000); 
+ 
+  Serial.println("Ethernet Setup");
+ 
+  if (Ethernet.begin(mac) == 0) {
+    Serial.println("Ethernet failed");
+    for (;;) ;
+  }
+  // give the Ethernet shield a second to initialize:
+  delay(1000);
 }
 
 void rfidSetup()
@@ -82,36 +84,13 @@ void rfidSetup()
 	Serial.println("RFID Ready");
 }
 
-String ethernetMonitorRead()
-{
-	// if there's incoming data from the net connection.
-	// send it out the serial port.  This is for debugging
-	// purposes only:
-	String string_buffer = "";
-	while (client.available()) {
-		char char_buffer = client.read();
-		string_buffer += char_buffer;
-	}
+
 	if (DEBUG_MODE)
 	{
-		Serial.println("Data that was read from the server: ");
+		
 		Serial.println(string_buffer);
 	}
 
-	// if there's no net connection, but there was one last time
-	// through the loop, then stop the client:
-	if (!client.connected() && lastConnected) {
-		Serial.println();
-		Serial.println("disconnecting.");
-		client.stop();
-	}
-        // store the state of the connection for next time through
-	// the loop:
-	lastConnected = client.connected();
-
-	return string_buffer;
-
-}
 
 void rfidMonitorRead()
 {
@@ -135,231 +114,103 @@ void rfidMonitorRead()
 	}
 	string_buffer = "";
 }
-
-bool findTagKeyInMyFridge(String tag_key)
+/*
+** Send an HTTP POST request to the Azure Mobile Service data API
+*/
+ 
+void sendRequest(int value)
 {
-	//ethernet server code
-	if (DEBUG_MODE)
-	{
-		Serial.println("Finding tag key in my frige, key");
-		Serial.println(tag_key);
-	}
-	String server_return_value;
-	String request_base = "GET find tag key in my fridge";
-	if (DEBUG_MODE)
-	{
-		Serial.println("The HTTP request: ");
-		Serial.println(request_base);
-	}
-	if (!client.connected())
-	{
-		httpRequest(request_base);
-	}	
-	 server_return_value = "temp value";//ethernetMonitorRead();
-	if (DEBUG_MODE)
-	{
-		Serial.println("The server return value: ");
-		Serial.println(server_return_value);
-	}
-	if (server_return_value) // need to update condition based on retrun value from server
-	{
-		if (DEBUG_MODE)
-		{
-			Serial.println("Finding tag key in my frige... return true");
-		}
-		return true;
-	}
-	if (DEBUG_MODE)
-	{
-		Serial.println("Finding tag key in my frige... return false");
-	}
-	return false;
+  Serial.println("\nconnecting...");
+ 
+  if (client.connect(server, 80)) {
+ 
+    Serial.print("sending ");
+    Serial.println(value);
+    /TodoItem/{id}
+    // GET URI
+    sprintf(buffer, "GET /api/Arduino/%s HTTP/1.1", value);
+    client.println(buffer);
+ 
+    // Host header
+    sprintf(buffer, "Host: %s", server);
+    client.println(buffer);
+ 
+    // Azure Mobile Services application key
+    sprintf(buffer, "X-ZUMO-APPLICATION: %s", ams_key);
+    client.println(buffer);
+ 
+    // JSON content type
+    client.println("Content-Type: application/json");
+  
+    // Content length
+    client.print("Content-Length: ");
+    client.println(strlen(buffer));
+ 
+    // End of headers
+    client.println();
+ 
+    // Request body
+    client.println(buffer);
+    
+  } else {
+    Serial.println("connection failed");
+  }
 }
 
 
-bool removeKeyFromMyFridge(String key)
+/*
+** Wait for response
+*/
+ 
+void waitResponse()
 {
-	//ethernet server code
-	if (DEBUG_MODE)
-	{
-		Serial.println("Remove tag key from my frige, key:");
-		Serial.println(key);
-	}
-	String server_return_value;
-	String request_base = "GET remove key fridge";
-	if (DEBUG_MODE)
-	{
-		Serial.println("The HTTP request: ");
-		Serial.println(request_base);
-	}
-	if (!client.connected())
-	{
-		//httpRequest(request_base);
-	}
-	server_return_value = "";//ethernetMonitorRead();
-	if (DEBUG_MODE)
-	{
-		Serial.println("The server return value: ");
-		Serial.println(server_return_value);
-	}
-	if (server_return_value != "") // need to update condition based on retrun value from server
-	{
-		if (DEBUG_MODE)
-		{
-			Serial.println("Removing tag key in my frige... return true");
-		}
-		return true;
-	}
-	if (DEBUG_MODE)
-	{
-		Serial.println("Removing tag key in my frige... return false");
-	}
-	return false;
+  while (!client.available()) {
+    if (!client.connected()) {
+      return;
+    }
+  }
 }
 
-bool addKeyToMyFridge(String key)
+/*
+** Read the response and dump to serial
+*/
+ 
+void readResponse()
 {
-	//ethernet server code
-	if (DEBUG_MODE)
-	{
-		Serial.println("Adding tag key in my frige...");
-		Serial.println(key);
-	}
-	String server_return_value;
-	String request_base = "GET add to my fridge";
-	if (DEBUG_MODE)
-	{
-		Serial.println("The HTTP request: ");
-		Serial.println(request_base);
-	}
-	if (!client.connected())
-	{
-		//httpRequest(request_base);
-	}
-               server_return_value = "temp value";//ethernetMonitorRead();
-	if (DEBUG_MODE)
-	{
-		Serial.println("The server return value: ");
-		Serial.println(server_return_value);
-	}
-	if (server_return_value) // need to update condition based on retrun value from server
-	{
-		if (DEBUG_MODE)
-		{
-			Serial.println("Removing tag key in my frige... return true");
-		}
-		return true;
-	}
-	if (DEBUG_MODE)
-	{
-		Serial.println("Removing tag key in my frige... return false");
-	}
-	return false;
+  bool print = true;
+  Serial.println("Data that was read from the server: ");
+  while (client.available()) {
+    char c = client.read();
+    // Print only until the first carriage return
+    if (c == '\n')
+      print = false;
+    if (print)
+      Serial.print(c);
+  }
 }
 
-bool findKeyInDataBase(String key)
+ 
+/*
+** Close the connection
+*/
+
+void endRequest()
 {
-	//ethernet server code
-	if (DEBUG_MODE)
-	{
-		Serial.println("Finding tag key in data base...");
-	}
-	String server_return_value;
-	String request_base = "GET find in data base";
-	if (DEBUG_MODE)
-	{
-		Serial.println("The HTTP request: ");
-		Serial.println(request_base);
-	}
-	if (!client.connected())
-	{
-		//httpRequest(request_base);
-	}
-	 server_return_value = "temp value";//ethernetMonitorRead();
-	if (DEBUG_MODE)
-	{
-		Serial.println("The server return value: ");
-		Serial.println(server_return_value);
-	}
-	if (server_return_value) // need to update condition based on retrun value from server
-	{
-		if (DEBUG_MODE)
-		{
-			Serial.println("Finding tag key in data base... return true");
-		}
-		return true;
-	}
-	if (DEBUG_MODE)
-	{
-		Serial.println("Finding tag key in my frige... return false");
-	}
-	return false;
+  client.stop();
 }
 
 void readTag(String rfid_key)
 {
-	void* record;
-	if (findTagKeyInMyFridge(rfid_key))
+    sendRequest(rfid_key);
+    waitResponse();
+    if (DEBUG_MODE)
 	{
-		if (removeKeyFromMyFridge(rfid_key))
-		{
-			Serial.println("Removed tag key from my frige... Success");
-		}
-		else
-		{
-			Serial.println("Removed tag key from my frige... Fail");
-		}
-	}
-	else
-	{
-		if (findKeyInDataBase(rfid_key))
-		{
-			if (addKeyToMyFridge(rfid_key))
-			{
-				Serial.println("Add tag key to my frige... Success");
-			}
-			else
-			{
-				Serial.println("Add tag key to my frige... Fail");
-			}
-		}
-		else
-		{
-			Serial.println("Tag key was not found in data base");
-		}
-	}
-	delay(500);
+        readResponse();
+    }
+    endRequest();
+    delay(1000);
 }
 
 
 
-//==========================================
-// ethernet procedures
-//==========================================
 
-// this method makes a HTTP connection to the server:
-void httpRequest(String request_base)
-{
-    Serial.println("connecting...");
-    // if there's a successful connection:
-    if (client.connect(server, 80)) 
-    {
-        Serial.println("connected");
-        client.println("GET /search?q=arduino HTTP/1.1");
-        client.println("a7he2uhi7b.database.windows.net.1433");
-        client.println();
-	// send the HTTP PUT request:
-	//client.println(request_base);
-	//client.println("Host: www.arduino.cc");
-	//client.println("User-Agent: Arduinoethernet/1.1");
-	//client.println("Connection: close");
-	//client.println();
-    }
-    else 
-    {
-	// if you couldn't make a connection:
-	Serial.println("connection failed");
-	Serial.println("disconnecting.");
-	client.stop();
-    }
-}
