@@ -32,6 +32,8 @@ const char *server = "fringmobileservice.azure-mobile.net";
 const char *ams_key = "waskbIzegKToLQvsNuUqaEUGgDRQyA77";
   
 char buffer[64];
+
+const char *frig_id = "1";
  
 /*
 ** Send an HTTP POST request to the Azure Mobile Service data API
@@ -120,8 +122,8 @@ void sendRequest(String value)
     Serial.print("sending ");
     Serial.println(value);
     
-    // GET URI
-    sprintf(buffer, "GET /api/Arduino/%s HTTP/1.1", value.c_str());
+    // GET URI 
+    sprintf(buffer, "GET /api/Arduino?itemId=%s&frigId=%s HTTP/1.1", value.c_str(),frig_id);
     client.println(buffer);
  
     // Host header
