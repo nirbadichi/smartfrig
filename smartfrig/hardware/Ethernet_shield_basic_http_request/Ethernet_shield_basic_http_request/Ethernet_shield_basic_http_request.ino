@@ -25,11 +25,11 @@ SoftwareSerial rfid = SoftwareSerial(5, 6);
 byte mac[] = {0x00, 0xAA, 0xBB, 0xCC, 0xDE, 0x04 };
 // Azure Mobile Service address
 // You can find this in your service dashboard
-const char *server = "fringmobileservice.azure-mobile.net";
+const char *server = "fringpilotservice.azure-mobile.net";
 
 // Azure Mobile Service Application Key
 // You can find this key in the 'Manage Keys' menu on the dashboard
-const char *ams_key = "waskbIzegKToLQvsNuUqaEUGgDRQyA77";
+const char *ams_key = "lIbRNBgZYLkUENaNSNmvLHwoWUyvwY11";
   
 char buffer[64];
 
