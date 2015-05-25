@@ -123,7 +123,7 @@ void sendRequest(String value)
     Serial.println(value);
     
     // GET URI 
-    sprintf(buffer, "GET /api/Arduino?itemId=%s&frigId=%s HTTP/1.1", value.c_str(),frig_id);
+    sprintf(buffer, "POST /api/Arduino?itemId=%s&frigId=%s HTTP/1.1", value.c_str(),frig_id);
     client.println(buffer);
  
     // Host header
