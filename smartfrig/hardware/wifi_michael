@@ -1,0 +1,132 @@
+#include <SoftwareSerial.h>
+
+#define RX_PIN 10
+#define TX_PIN 11
+
+//#define SSID "TechPublic"
+//#define PASS ""
+#define SSID        "XT1032 3789"
+#define PASS        "12345678"
+
+char serialbuffer[1000];//serial buffer for request url
+SoftwareSerial wifi(RX_PIN, TX_PIN); // RX, TX
+
+void setup() {
+  Serial.begin(9600);
+  wifi.begin(9600);
+  
+  wifi.println("AT");
+  
+  if (wifi.find("OK")) {
+    Serial.println("AT returned OK");
+  }
+  
+  delay(1000);
+  
+  String cmd="AT+CWJAP=\"";
+  cmd+=SSID;
+  cmd+="\",\"";
+  cmd+=PASS;
+  cmd+="\"";
+  
+  wifi.println(cmd);
+}
+
+void loop() {
+  if (wifi.available()){
+    Serial.write(wifi.read());
+  } 
+  
+   //output everything from ESP8266 to the Arduino Micro Serial output
+  while (wifi.available() > 0) {
+    Serial.write(wifi.read());
+  }
+  
+  if (Serial.available() > 0) {
+     //read from serial until terminating character
+     int len = Serial.readBytesUntil('\n', serialbuffer, sizeof(serialbuffer));
+  
+     //trim buffer to length of the actual message
+     String message = String(serialbuffer).substring(0,len-1);
+     Serial.println("message: " + message);
+ 
+     //check to see if the incoming serial message is a url or an AT command
+     if(message.substring(0,2)=="AT"){
+       //make command request
+       Serial.println("COMMAND REQUEST");
+       wifi.println(message); 
+     }else{
+      //make webrequest
+       Serial.println("WEB REQUEST");
+       WebRequest(message);
+     }
+  }
+}
+
+
+//web request needs to be sent without the http for now, https still needs some working
+void WebRequest(String request){
+ //find the dividing marker between domain and path
+     int slash = request.indexOf('/');
+     
+     //grab the domain
+     String domain;
+     if(slash>0){  
+       domain = request.substring(0,slash);
+     }else{
+       domain = request;
+     }
+
+     //get the path
+     String path;
+     if(slash>0){  
+       path = request.substring(slash);   
+     }else{
+       path = "/";          
+     }
+     
+     //output domain and path to verify
+     Serial.println("domain: |" + domain + "|");
+     Serial.println("path: |" + path + "|");     
+     
+     //create start command
+     String startcommand = "AT+CIPSTART=\"TCP\",\"" + domain + "\", 80"; //443 is HTTPS, still to do
+     
+     wifi.println(startcommand);
+     Serial.println(startcommand);
+     
+     
+     //test for a start error
+     if(wifi.find("Error")){
+       Serial.println("error on start");
+       return;
+     }
+     
+     //create the request command
+     String sendcommand = "GET http://"+ domain + path + " HTTP/1.0\r\n\r\n\r\n";//works for most cases
+     
+     Serial.print(sendcommand);
+     
+     //send 
+     wifi.print("AT+CIPSEND=");
+     wifi.println(sendcommand.length());
+     
+     //debug the command
+     Serial.print("AT+CIPSEND=");
+     Serial.println(sendcommand.length());
+     
+     //delay(5000);
+     if(wifi.find(">"))
+     {
+       Serial.println(">");
+     }else
+     {
+       wifi.println("AT+CIPCLOSE");
+       Serial.println("connect timeout");
+       delay(1000);
+       return;
+     }
+     
+     //Serial.print(getcommand);
+     wifi.print(sendcommand); 
+}
