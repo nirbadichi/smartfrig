@@ -23,37 +23,34 @@ void nfcSetup()
     //Initialize nfc serial
     nfc.begin();
     Serial.println("NDEF Reader");
+    delay(500);
+}
+
+void wireSetup()
+{
+    Wire.begin();    
+  delay(500);
 }
 
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
   pinMode(4,OUTPUT);
- // digitalWrite(3,0);
-  delay(500);
+  digitalWrite(4,LOW);
+
   nfcSetup();
-   delay(500);
-  //digitalWrite(4,HIGH);
-  //delay(500);
-  Wire.begin();    
-  delay(500);
+  wireSetup();
 
 }
 
 void loop() {
-  /*digitalWrite(4,0);
-  delay(1000);
-   digitalWrite(4,1);
-   delay(1000);
-  digitalWrite(3,0);
-  delay(50);*/
   if (DEBUG_MODE){
       Serial.println("\nScan a NFC tag\n");
   }
-  //digitalWrite(2,0);
   if (nfc.tagPresent()){
       NfcTag tag = nfc.read();
       if (tag.hasNdefMessage()){ // every tag won't have a message
+          digitalWrite(4,HIGH);
           String payloadAsString = "";
           NdefMessage message = tag.getNdefMessage();
           int recordCount = message.getRecordCount();
@@ -72,49 +69,27 @@ void loop() {
               }
               
           }
-          digitalWrite(3,HIGH);
-          delay(50);
-          digitalWrite(3,LOW);
-          delay(50);
-          digitalWrite(3,HIGH);
-          delay(500);
-          Wire.begin();
-          delay(500);
           Wire.beginTransmission(5);
           Serial.println("sending String:");
-          Wire.write("2;2;2;2;2;1;1;1");
+          char tab2[1024];
+          strncpy(tab2, payloadAsString.c_str(), sizeof(tab2));
+          tab2[sizeof(tab2) - 1] = 0;
+          Wire.write(tab2);
           Wire.endTransmission();
           Serial.println("data was sent");
           delay(1000);
-          Wire.requestFrom(5,5);
+          if (DEBUG_MODE)
+          {
+             Wire.requestFrom(5,5);
+          }
           while (Wire.available()){
             char c = Wire.read();
             Serial.print(c);
           }
+          digitalWrite(4,LOW);
       }    
   }
   delay(3000);
-  /*
-  // put your main code here, to run repeatedly:
-  while(Serial.available()){
-      char c =Serial.read();
-      if(c == 'H'){
-       // digitalWrite(2,0);
-        delay(50);
-        Serial.println("start sending");
-        Wire.beginTransmission(5);
-        Wire.write("1;1;1;1;1;1;1;1");
-        Wire.endTransmission();
-        delay(10000);
-        Wire.requestFrom(5,5);
-               Serial.println("requset");
-        while (Wire.available()){
-            char c = Wire.read();
-            Serial.print(c);
-        }
-      }
-  }*/
-        
 }
 
 
