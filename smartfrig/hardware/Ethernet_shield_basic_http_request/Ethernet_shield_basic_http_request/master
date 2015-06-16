@@ -51,10 +51,8 @@ delay(1000);
           delay(500);
           String payloadAsString = "";
           NdefMessage message = tag.getNdefMessage();
-          int recordCount = message.getRecordCount();
-          for (int i = 0; i < recordCount; i++){      
-              NdefMessage message = tag.getNdefMessage();
-              NdefRecord record = message.getRecord(i);
+          int recordCount = message.getRecordCount();   
+              NdefRecord record = message.getRecord(0);
               int payloadLength = record.getPayloadLength();
               byte payload[payloadLength];
               record.getPayload(payload);
@@ -66,7 +64,6 @@ delay(1000);
                   Serial.println(payloadAsString);
               }
               
-          }
           delay(500);
           Wire.beginTransmission(5);
           Serial.println("sending String:");
@@ -74,13 +71,15 @@ delay(1000);
           strncpy(tab2, payloadAsString.c_str(), sizeof(tab2));
           tab2[sizeof(tab2) - 1] = 0;
           Wire.write(tab2);*/
-          Wire.write("2;2;2;2;2;2;2;2");
+          Wire.write(payloadAsString.c_str(),payloadAsString.length());
+//          Wire.write("2;2;2;2;2;2;2;2");
           Wire.endTransmission();
           Serial.println("data was sent");
-          delay(2000);
+          delay(200);
           if (DEBUG_MODE)
           {
-             Wire.requestFrom(5,5);
+             Wire.requestFrom(5,payloadAsString.length());
+             delay(100);
           }
           while (Wire.available()){
             char c = Wire.read();
