@@ -23,13 +23,6 @@ void nfcSetup()
     //Initialize nfc serial
     nfc.begin();
     Serial.println("NDEF Reader");
-    delay(500);
-}
-
-void wireSetup()
-{
-    Wire.begin();    
-  delay(500);
 }
 
 void setup() {
@@ -37,20 +30,25 @@ void setup() {
   Serial.begin(9600);
   pinMode(4,OUTPUT);
   digitalWrite(4,LOW);
-
+ delay(500);
   nfcSetup();
-  wireSetup();
+  delay(500);
+   Wire.begin();    
+  delay(500);
 
 }
 
 void loop() {
+delay(1000);
   if (DEBUG_MODE){
       Serial.println("\nScan a NFC tag\n");
   }
   if (nfc.tagPresent()){
       NfcTag tag = nfc.read();
       if (tag.hasNdefMessage()){ // every tag won't have a message
-          digitalWrite(4,HIGH);
+          delay(50);
+	  digitalWrite(4,HIGH);
+          delay(500);
           String payloadAsString = "";
           NdefMessage message = tag.getNdefMessage();
           int recordCount = message.getRecordCount();
@@ -69,15 +67,17 @@ void loop() {
               }
               
           }
+          delay(500);
           Wire.beginTransmission(5);
           Serial.println("sending String:");
-          char tab2[1024];
+          /*char tab2[1024];
           strncpy(tab2, payloadAsString.c_str(), sizeof(tab2));
           tab2[sizeof(tab2) - 1] = 0;
-          Wire.write(tab2);
+          Wire.write(tab2);*/
+          Wire.write("2;2;2;2;2;2;2;2");
           Wire.endTransmission();
           Serial.println("data was sent");
-          delay(1000);
+          delay(2000);
           if (DEBUG_MODE)
           {
              Wire.requestFrom(5,5);
@@ -91,6 +91,3 @@ void loop() {
   }
   delay(3000);
 }
-
-
-
