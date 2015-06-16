@@ -35,6 +35,7 @@ EthernetClient client;
 
 boolean lastConnected = false;                 // state of the connection last time through the main loop
 String respond;
+String input;
 
 void ethernetSetup()
 {
@@ -66,7 +67,8 @@ void loop() {
 }
 
 void requestEvent(){
-  Wire.write("back");
+//  Wire.write("back");
+  Wire.write(input.c_str(),input.length());
   
 }
 
@@ -74,7 +76,8 @@ void receiveEvent(int howMany){
 
   //===============================================
   //Send to Arduino
-   String input="";
+//   String input="";
+   input="";
    while(Wire.available()){
     
        char c =Wire.read();
