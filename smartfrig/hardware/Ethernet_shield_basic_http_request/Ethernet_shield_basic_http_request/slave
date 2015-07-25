@@ -35,7 +35,6 @@ EthernetClient client;
 
 boolean lastConnected = false;                 // state of the connection last time through the main loop
 String respond;
-String input;
 
 void ethernetSetup()
 {
@@ -56,8 +55,12 @@ void setup() {
   // put your setup code here, to run once:
   Wire.begin(5);
   Wire.onReceive(receiveEvent);
-  Wire.onRequest(requestEvent);
+  //Wire.onRequest(requestEvent);
   ethernetSetup();
+  pinMode(7,OUTPUT);
+      digitalWrite(7,HIGH);
+    delay(1000);
+    digitalWrite(7,LOW);
   
 }
 
@@ -66,31 +69,25 @@ void loop() {
   
 }
 
-void requestEvent(){
+/*void requestEvent(){
 //  Wire.write("back");
   Wire.write(input.c_str(),input.length());
   
 }
-
+*/
 void receiveEvent(int howMany){
 
   //===============================================
   //Send to Arduino
-//   String input="";
-   input="";
-   while(Wire.available()){
-    
-       char c =Wire.read();
-       input += String(c);
-     //if(c == 'H'){
-     // digitalWrite(12,HIGH);
-     // readTag("1;1;1;1;1;1;1;1");
-     //}
-     //else if(c =='L'){
-     
-     //}
-   }
-     readTag(input);
+   String input="";
+   while(Wire.available() > 0)
+   {
+      char c = Wire.read();
+      input += String(c);
+      delay(50);
+    }
+
+    readTag(input);
    //===============================================
 }
 
