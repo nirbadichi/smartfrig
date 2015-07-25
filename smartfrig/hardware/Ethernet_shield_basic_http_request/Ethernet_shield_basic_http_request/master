@@ -76,11 +76,11 @@ delay(1000);
           Wire.endTransmission();
           Serial.println("data was sent");
           delay(200);
-          if (DEBUG_MODE)
+         /* if (DEBUG_MODE)
           {
              Wire.requestFrom(5,payloadAsString.length());
              delay(100);
-          }
+          }*/
           while (Wire.available()){
             char c = Wire.read();
             Serial.print(c);
